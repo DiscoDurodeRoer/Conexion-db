@@ -27,7 +27,7 @@ public class ConexionDB {
         try {
             Class.forName(claseNombre);
             conexion = DriverManager.getConnection(cadenaConexion);
-            conexion.setAutoCommit(false);
+            conexion.setAutoCommit(true);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
@@ -137,15 +137,12 @@ public class ConexionDB {
      * Devuelve al resultset los resultados de una consulta
      *
      * @param consulta Consulta a ejecutar
+     * @throws java.sql.SQLException
      */
-    public void ejecutarConsulta(String consulta) {
-        try {
-            sentencia = conexion.createStatement();
-            resultSet = sentencia.executeQuery(consulta);
+    public void ejecutarConsulta(String consulta) throws SQLException {
 
-        } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        sentencia = conexion.createStatement();
+        resultSet = sentencia.executeQuery(consulta);
 
     }
 
@@ -156,16 +153,12 @@ public class ConexionDB {
      * @param instruccion Instruccion a afectar (Insert, Update o Delete)
      * @return Números de filas afectadas
      */
-    public int ejecutarInstruccion(String instruccion) {
+    public int ejecutarInstruccion(String instruccion) throws SQLException {
 
         int filas = 0;
 
-        try {
-            sentencia = conexion.createStatement();
-            filas = sentencia.executeUpdate(instruccion);
-        } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        sentencia = conexion.createStatement();
+        filas = sentencia.executeUpdate(instruccion);
 
         return filas;
     }
@@ -319,8 +312,7 @@ public class ConexionDB {
             return aux.getInt(1);
 
         } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-            return -1;
+            return 0;
         }
 
     }
@@ -342,8 +334,7 @@ public class ConexionDB {
             return aux.getDouble(1);
 
         } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-            return -1;
+            return 0;
         }
 
     }
@@ -372,7 +363,6 @@ public class ConexionDB {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
 
