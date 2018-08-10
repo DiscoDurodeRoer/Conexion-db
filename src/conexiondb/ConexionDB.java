@@ -511,22 +511,20 @@ public class ConexionDB {
      * @param columnaID Nombre de la columna de la base de datos
      * @param tabla Nombre de la tabla de la base de datos
      * @return Valor del último ID de la base de datos
+     * @throws java.sql.SQLException
      */
-    public int ultimoID(String columnaID, String tabla) {
+    public int ultimoID(String columnaID, String tabla) throws SQLException {
 
         int IDMaximo = -1;
         Statement sm;
-        try {
-            sm = conexion.createStatement();
-            ResultSet rs = sm.executeQuery("select max(" + columnaID + ") as " + columnaID + " from " + tabla + "");
-            rs.next();
-            IDMaximo = rs.getInt(columnaID);
 
-            rs.close();
-            sm.close();
-        } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        sm = conexion.createStatement();
+        ResultSet rs = sm.executeQuery("select max(" + columnaID + ") as " + columnaID + " from " + tabla + "");
+        rs.next();
+        IDMaximo = rs.getInt(columnaID);
+
+        rs.close();
+        sm.close();
 
         return IDMaximo;
 
@@ -540,7 +538,7 @@ public class ConexionDB {
      * @param tabla Nombre de la tabla de la base de datos
      * @return Valor del último ID que podemos usar
      */
-    public int proximoIDDisponible(String columnaID, String tabla) {
+    public int proximoIDDisponible(String columnaID, String tabla) throws SQLException {
 
         int id = ultimoID(columnaID, tabla);
 
