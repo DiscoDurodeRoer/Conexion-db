@@ -37,7 +37,7 @@ public class ConexionDB {
         try {
             Class.forName(claseNombre);
             conexion = DriverManager.getConnection(cadenaConexion, usuario, pass);
-            conexion.setAutoCommit(false);
+            conexion.setAutoCommit(true);
         } catch (ClassNotFoundException | SQLException ex) {
             System.out.println(ex.getMessage());
         }
