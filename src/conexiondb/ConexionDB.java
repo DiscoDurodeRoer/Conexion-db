@@ -17,6 +17,7 @@ public class ConexionDB {
 
     protected Connection conexion;
     protected Statement sentencia;
+    protected PreparedStatement sentenciaPreparada;
     protected ResultSet resultSet;
 
     /**
@@ -68,6 +69,15 @@ public class ConexionDB {
      */
     public ResultSet getResultSet() {
         return resultSet;
+    }
+
+    /**
+     * Devuelve la sentencia preparada
+     *
+     * @return PreparedStatement
+     */
+    public PreparedStatement getSentenciaPreparada() {
+        return sentenciaPreparada;
     }
 
     /**
@@ -949,38 +959,115 @@ public class ConexionDB {
      * de llamar a este método
      *
      * @param tabla Elemento donde se muestran los datos
+     * @throws java.sql.SQLException
      */
-    public void rellenaJTableBD(DefaultTableModel tabla) {
-        try {
+    public void rellenaJTableBD(DefaultTableModel tabla) throws SQLException {
 
-            //Cabecera
-            ResultSetMetaData metadatos = resultSet.getMetaData();
+        //Cabecera
+        ResultSetMetaData metadatos = resultSet.getMetaData();
+        tabla.setColumnCount(metadatos.getColumnCount());
 
-            tabla.setColumnCount(metadatos.getColumnCount());
+        int numeroColumnas = tabla.getColumnCount();
 
-            int numeroColumnas = tabla.getColumnCount();
+        String[] etiquetas = new String[numeroColumnas];
 
-            String[] etiquetas = new String[numeroColumnas];
+        for (int i = 0; i < numeroColumnas; i++) {
+            etiquetas[i] = metadatos.getColumnLabel(i + 1);
+        }
 
-            for (int i = 0; i < numeroColumnas; i++) {
-                etiquetas[i] = metadatos.getColumnLabel(i + 1);
+        tabla.setColumnIdentifiers(etiquetas);
+
+        //Contenido
+        while (resultSet.next()) {
+
+            Object[] datosFila = new Object[tabla.getColumnCount()];
+            for (int i = 0; i < tabla.getColumnCount(); i++) {
+                datosFila[i] = resultSet.getObject(i + 1);
             }
+            tabla.addRow(datosFila);
+        }
 
-            tabla.setColumnIdentifiers(etiquetas);
+        cerrarResult();
 
-            //Contenido
-            while (resultSet.next()) {
-                Object[] datosFila = new Object[tabla.getColumnCount()];
-                for (int i = 0; i < tabla.getColumnCount(); i++) {
-                    datosFila[i] = resultSet.getObject(i + 1);
+    }
+
+    /**
+     * Devuelve al resultset los resultados de una consulta
+     *
+     * @param consulta Consulta a ejecutar
+     * @param valores
+     * @throws java.sql.SQLException
+     */
+    public void ejecutarConsultaPreparada(String consulta, Object[] valores) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        rellenarSentenciaPreparada(valores);
+        resultSet = sentenciaPreparada.executeQuery();
+
+    }
+
+    /**
+     * Devuelve al resultset los resultados de una consulta
+     *
+     * @param consulta Consulta a ejecutar
+     * @throws java.sql.SQLException
+     */
+    public void ejecutarConsultaPreparada(String consulta) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        resultSet = sentenciaPreparada.executeQuery();
+
+    }
+
+    /**
+     * Devuelve el numero de filas afectadas por un delete, update o insert 
+     *
+     * @param consulta Instruccion a ejecutar
+     * @param valores
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    public int ejecutarInstruccionPreparada(String consulta, Object[] valores) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        rellenarSentenciaPreparada(valores);
+        int filas = sentenciaPreparada.executeUpdate();
+        return filas;
+
+    }
+
+    /**
+     * Devuelve el numero de filas afectadas por un delete, update o insert
+     *
+     * @param consulta Instruccion a ejecutar
+     * @return 
+     * @throws java.sql.SQLException
+     */
+    public int ejecutarInstruccionPreparada(String consulta) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        int filas = sentenciaPreparada.executeUpdate();
+        return filas;
+    }
+
+    private void rellenarSentenciaPreparada(Object[] valores) throws SQLException {
+
+        if (valores != null && valores.length > 0) {
+            Object obj;
+            int indice;
+            for (int i = 0; i < valores.length; i++) {
+
+                obj = valores[i];
+                indice = i + 1;
+                if (obj instanceof Integer) {
+                    this.sentenciaPreparada.setInt(indice, (int) obj);
+                } else if (obj instanceof String) {
+                    this.sentenciaPreparada.setString(indice, (String) obj);
+                } else if (obj instanceof Double) {
+                    this.sentenciaPreparada.setDouble(indice, (double) obj);
                 }
-                tabla.addRow(datosFila);
+
             }
-
-            cerrarResult();
-
-        } catch (SQLException ex) {
-            Logger.getLogger(ConexionDB.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
