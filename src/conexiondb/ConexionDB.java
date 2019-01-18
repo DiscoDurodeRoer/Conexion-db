@@ -1,6 +1,7 @@
 package conexiondb;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListCellRenderer;
@@ -1010,6 +1011,21 @@ public class ConexionDB {
      * Devuelve al resultset los resultados de una consulta
      *
      * @param consulta Consulta a ejecutar
+     * @param valores
+     * @throws java.sql.SQLException
+     */
+    public void ejecutarConsultaPreparada(String consulta, ArrayList valores) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        rellenarSentenciaPreparada(valores);
+        resultSet = sentenciaPreparada.executeQuery();
+
+    }
+
+    /**
+     * Devuelve al resultset los resultados de una consulta
+     *
+     * @param consulta Consulta a ejecutar
      * @throws java.sql.SQLException
      */
     public void ejecutarConsultaPreparada(String consulta) throws SQLException {
@@ -1020,11 +1036,11 @@ public class ConexionDB {
     }
 
     /**
-     * Devuelve el numero de filas afectadas por un delete, update o insert 
+     * Devuelve el numero de filas afectadas por un delete, update o insert
      *
      * @param consulta Instruccion a ejecutar
      * @param valores
-     * @return 
+     * @return
      * @throws java.sql.SQLException
      */
     public int ejecutarInstruccionPreparada(String consulta, Object[] valores) throws SQLException {
@@ -1040,7 +1056,24 @@ public class ConexionDB {
      * Devuelve el numero de filas afectadas por un delete, update o insert
      *
      * @param consulta Instruccion a ejecutar
-     * @return 
+     * @param valores
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public int ejecutarInstruccionPreparada(String consulta, ArrayList valores) throws SQLException {
+
+        this.sentenciaPreparada = this.conexion.prepareStatement(consulta);
+        rellenarSentenciaPreparada(valores);
+        int filas = sentenciaPreparada.executeUpdate();
+        return filas;
+
+    }
+
+    /**
+     * Devuelve el numero de filas afectadas por un delete, update o insert
+     *
+     * @param consulta Instruccion a ejecutar
+     * @return
      * @throws java.sql.SQLException
      */
     public int ejecutarInstruccionPreparada(String consulta) throws SQLException {
@@ -1066,6 +1099,28 @@ public class ConexionDB {
                 } else if (obj instanceof Double) {
                     this.sentenciaPreparada.setDouble(indice, (double) obj);
                 }
+
+            }
+        }
+
+    }
+
+    private void rellenarSentenciaPreparada(ArrayList valores) throws SQLException {
+
+        if (valores != null && valores.size() > 0) {
+
+            int indice = 1;
+            for (Object obj : valores) {
+
+                if (obj instanceof Integer) {
+                    this.sentenciaPreparada.setInt(indice, (int) obj);
+                } else if (obj instanceof String) {
+                    this.sentenciaPreparada.setString(indice, (String) obj);
+                } else if (obj instanceof Double) {
+                    this.sentenciaPreparada.setDouble(indice, (double) obj);
+                }
+
+                indice++;
 
             }
         }
