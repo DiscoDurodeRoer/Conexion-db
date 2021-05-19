@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Conexion-db:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Conexion_db_jar</output-path>
+    <root id="archive" name="Conexion-db.jar">
+      <element id="module-output" name="Conexion-db" />
+    </root>
+  </artifact>
+</component>
