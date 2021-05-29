@@ -41,7 +41,7 @@ public final class ConexionBDSingleton {
      * @param SGBD Oracle, MySQL, OBDC y SQLite
      * @param PC IP o localhost
      * @param usuario Usuario con permisos en la BD
-     * @param password Password del usuario
+     * @param clave Password del usuario
      * @param SID En oracle ORADAM2 y en MySQL la base de datos usada (en el
      * resto vacio)
      */
@@ -50,7 +50,7 @@ public final class ConexionBDSingleton {
         try {
             switch (SGBD) {
                 case "MySQL":
-                    Class.forName("com.mysql.jdbc.Driver");
+                    Class.forName("com.mysql.cj.jdbc.Driver");
                     conexion = DriverManager.getConnection("jdbc:mysql://" + PC + "/" + SID, usuario, clave);
                     break;
                 case "Oracle":
@@ -97,7 +97,7 @@ public final class ConexionBDSingleton {
      * Crea la instancia de la conexión
      *
      * @param pSGBD Oracle, MySQL, OBDC y SQLite
-     * @param pPc IP o localhost
+     * @param pServidor IP o localhost
      * @param pUsuario Usuario con permisos en la BD
      * @param pPassword Password del usuario
      * @param pSID En oracle ORADAM2 y en MySQL la base de datos usada (en el
